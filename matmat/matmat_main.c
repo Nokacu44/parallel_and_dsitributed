@@ -48,8 +48,8 @@ int main(void)
   double Gflops;
   double t1, t2, total_time;
 
-  ldA = ldB = ldC = 256;
-  N1 = N2 = N3 = 256;
+  ldA = ldB = ldC = 2500;
+  N1 = N2 = N3 = 2048;
 
   A = (double *)malloc(sizeof(double) * ldA * ldA);
   B = (double *)malloc(sizeof(double) * ldB * ldB);
@@ -59,18 +59,18 @@ int main(void)
   populate_matrix_random(B, ldB, N2);
   set_matrix(C, ldC, N3, 0);
 
-  iterations = 1536;
+  //iterations = 1536;
 
   // prova dati conformi
-  set_matrix(A, ldA, N1, 1);
-  set_matrix(B, ldB, N2, 1);
-  set_matrix(C, ldC, N3, 1);
-  int y;
-  matmatijk(ldA, ldB, ldC, A, B, C, N1, N2, N3);
-  for (y = 0; y < N3; ++y)
-  {
-    printf("%e ", C[ldC * y + y]);
-  }
+  // set_matrix(A, ldA, N1, 1);
+  // set_matrix(B, ldB, N2, 1);
+  // set_matrix(C, ldC, N3, 1);
+  // int y;
+  // matmatijk(ldA, ldB, ldC, A, B, C, N1, N2, N3);
+// for (y = 0; y < N3; ++y)
+// {
+//   printf("%e ", C[ldC * y + y]);
+// }
   //
 
   for (iter = 256; iter <= iterations; iter += 256)
@@ -88,16 +88,22 @@ int main(void)
     // MEASURE_GFLOPS(matmatkij, "k,i,j");
     // MEASURE_GFLOPS(matmatjki, "j,k,i");
 
-    t1 = get_cur_time();
-    matmatblock(ldA, ldB, ldC, A, B, C, N1, N2, N3, 64, 64, 64);
-    t2 = get_cur_time();
-    Gflops = (2.0 * (N1 * N2 * N3)) / ((t2 - t1) * 1e9);
-    printf("GFLOPS matmatblock = %e \n", Gflops);
-
-    t1 = get_cur_time();
-    matmatthread(ldA, ldB, ldC, A, B, C, N1, N2, N3, 64, 64, 64, 2, 4);
-    t2 = get_cur_time();
-    Gflops = (2.0 * (N1 * N2 * N3)) / ((t2 - t1) * 1e9);
-    printf("GFLOPS matmatthread = %e \n", Gflops);
   }
+
+  // int n;
+  printf("Confronto matmatblock e matmatthread \n");
+  t1 = get_cur_time();
+  matmatblock(ldA, ldB, ldC, A, B, C, N1, N2, N3, 256, 256, 256);
+  t2 = get_cur_time();
+  //Gflops = (2.0 * (N1 * N2 * N3)) / ((t2 - t1) * 1e9);
+  Gflops = (2.0 * (N1 * N2 * N3)) / ((t2 - t1) * 1e9);
+  printf("GFLOPS matmatblock = %e \n", Gflops);
+
+  t1 = get_cur_time();
+  matmatthread(ldA, ldB, ldC, A, B, C, N1, N2, N3, 256, 256, 256, 2, 4);
+  t2 = get_cur_time();
+  Gflops = (2.0 * (N1 * N2 * N3)) / ((t2 - t1) * 1e9);
+  printf("GFLOPS matmatthread = %e \n", Gflops);
+
+
 }
